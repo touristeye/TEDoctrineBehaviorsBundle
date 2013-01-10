@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="te.doctrine_behaviors.twig_extension.class">TE\DoctrineBehaviorsBundle\Twig\TETranslationExtension</parameter>
+    </parameters>
+
+    <services>
+        <service id="te.doctrine_behaviors.twig.te_translation_extension" class="%te.doctrine_behaviors.twig_extension.class%">
+            <tag name="twig.extension" />
+            <argument type="service" id="service_container" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,52 @@
+services:
+    te.doctrine_behaviors.translatable_listener:
+        class:   "%te.doctrine_behaviors.translatable_listener.class%"
+        public:  false
+        arguments:
+            - @annotation_reader
+            - "@te.doctrine_behaviors.translatable_listener.current_locale_callable"
+            - "%te.doctrine_behaviors.translatable_listener.accepted_locales%"
+        tags:
+            - { name: doctrine.event_subscriber, priority: 100 }
+
+    te.doctrine_behaviors.translatable_listener.current_locale_callable:
+        class:           "%te.doctrine_behaviors.translatable_listener.current_locale_callable.class%"
+        arguments:
+            - "@service_container" # lazy request resolution
+        public:  false
+
+    te.doctrine_behaviors.timestampable_listener:
+        class:   "%te.doctrine_behaviors.timestampable_listener.class%"
+        arguments:
+            - @annotation_reader
+        public:  false
+        tags:
+            - { name: doctrine.event_subscriber }
+
+    te.doctrine_behaviors.blameable_listener:
+        class:   "%te.doctrine_behaviors.blameable_listener.class%"
+        arguments:
+            - @annotation_reader
+            - "@te.doctrine_behaviors.blameable_listener.user_callable"
+            - "%te.doctrine_behaviors.blameable_listener.user_entity%"
+        public:  false
+        tags:
+            - { name: doctrine.event_subscriber }
+
+    te.doctrine_behaviors.blameable_listener.user_callable:
+        class:           "%te.doctrine_behaviors.blameable_listener.user_callable.class%"
+        arguments:
+            - "@service_container" # because of circular dep
+        public:  false
+
+    te.doctrine_behaviors.sluggable_listener:
+      class: "%te.doctrine_behaviors.sluggable_listener.class%"
+      public: false
+      tags:
+        - { name: doctrine.event_subscriber }
+
+
+    te.doctrine_behaviors.utilities.camel_case:
+        class: %te.doctrine_behaviors.camel_case_utilities.class%
+        public: false
+

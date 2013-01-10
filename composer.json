@@ -1,0 +1,36 @@
+{
+    "name": "touristeye/doctrine-behaviors-bundle",
+    "type": "symfony-bundle",
+    "description": "Bundle with behaviors for Symfony2 and Doctrine 2..",
+    "keywords": ["orm", "doctrine", "translable", "blameable", "timestampable", "softdeletable", "sluggable"],
+    "homepage": "https://github.com/touristeye/DoctrineBehaviorsBundle",
+    "version": "0.1",
+    "license": "LGPL-3.0",
+    "authors": [
+        {
+            "name": "Javier F. Escribano",
+            "email": "javier@touristeye.com"
+        },
+        {
+            "name": "Matteo Giachino",
+            "email": "matteog@gmail.com"
+        },
+        {
+            "name":     "Knplabs",
+            "homepage": "http://knplabs.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "doctrine/doctrine-bundle": "1.0.*"
+    },
+    "require-dev": {
+        "twig/twig": "1.9.*"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": { "TE\\DoctrineBehaviorsBundle": "" }
+    },
+    "target-dir": "TE/DoctrineBehaviorsBundle"
+}

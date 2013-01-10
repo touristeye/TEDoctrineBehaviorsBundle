@@ -1,0 +1,12 @@
+parameters:
+    te.doctrine_behaviors.timestampable_listener.class: TE\DoctrineBehaviorsBundle\Listener\TimestampableListener
+    te.doctrine_behaviors.blameable_listener.class: TE\DoctrineBehaviorsBundle\Listener\BlameableListener
+    te.doctrine_behaviors.blameable_listener.user_callable.class: TE\DoctrineBehaviorsBundle\Services\UserCallable
+    te.doctrine_behaviors.blameable_listener.user_entity: ~
+    te.doctrine_behaviors.sluggable_listener.class: TE\DoctrineBehaviorsBundle\Listener\SluggableListener
+
+    te.doctrine_behaviors.camel_case_utilities.class: TE\DoctrineBehaviorsBundle\Utilities\CamelCase
+
+    te.doctrine_behaviors.translatable_listener.class: TE\DoctrineBehaviorsBundle\Listener\TranslatableListener
+    te.doctrine_behaviors.translatable_listener.current_locale_callable.class: TE\DoctrineBehaviorsBundle\Services\CurrentLocaleCallable
+    te.doctrine_behaviors.translatable_listener.accepted_locales: ~
