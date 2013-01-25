@@ -154,8 +154,9 @@ class BlameableListener implements EventSubscriber
         $entity = $eventArgs->getEntity();
 
         $classMetadata = $em->getClassMetadata(get_class($entity));
+
         if ($this->isEntitySupported($classMetadata->reflClass, true)) {
-            if (!$entity->getCreatedBy()) {
+            if ($classMetadata->hasAssociation('createdBy') && !$entity->getCreatedBy()) {
                 $user = $this->getUser();
                 if ($this->isValidUser($user)) {
                     $entity->setCreatedBy($user);
@@ -166,7 +167,7 @@ class BlameableListener implements EventSubscriber
                     ]);
                 }
             }
-            if (!$entity->getUpdatedBy() && 0 ) {
+            if ($classMetadata->hasAssociation('updatedBy') && !$entity->getUpdatedBy() ) {
                 $user = $this->getUser();
                 if ($this->isValidUser($user)) {
                     $entity->setUpdatedBy($user);
@@ -212,15 +213,18 @@ class BlameableListener implements EventSubscriber
             if (!$entity->isBlameable()) {
                 return;
             }
-            $user = $this->getUser();
-            if ($this->isValidUser($user)) {
-                $oldValue = $entity->getUpdatedBy();
-                $entity->setUpdatedBy($user);
-                $uow->propertyChanged($entity, 'updatedBy', $oldValue, $user);
 
-                $uow->scheduleExtraUpdate($entity, [
-                    'updatedBy' => [$oldValue, $user],
-                ]);
+            if ( $classMetadata->hasAssociation('updatedBy') ) {
+                $user = $this->getUser();
+                if ($this->isValidUser($user)) {
+                    $oldValue = $entity->getUpdatedBy();
+                    $entity->setUpdatedBy($user);
+                    $uow->propertyChanged($entity, 'updatedBy', $oldValue, $user);
+
+                    $uow->scheduleExtraUpdate($entity, [
+                        'updatedBy' => [$oldValue, $user],
+                    ]);
+                }
             }
         }
     }
