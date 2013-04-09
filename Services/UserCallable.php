@@ -37,8 +37,10 @@ class UserCallable
     public function __invoke()
     {
         $token = $this->container->get('security.context')->getToken();
-        if (null !== $token) {
+        if (null !== $token
+            && get_class($token) != 'Symfony\Component\Security\Core\Authentication\Token\AnonymousToken') {
             return $token->getUser();
         }
+        return null;
     }
 }
