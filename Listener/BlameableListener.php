@@ -149,40 +149,71 @@ class BlameableListener implements EventSubscriber
      */
     public function prePersist(LifecycleEventArgs $eventArgs)
     {
-        $em =$eventArgs->getEntityManager();
-        $uow = $em->getUnitOfWork();
+        $em     = $eventArgs->getEntityManager();
+        $uow    = $em->getUnitOfWork();
         $entity = $eventArgs->getEntity();
 
         $classMetadata = $em->getClassMetadata(get_class($entity));
 
         if ($this->isEntitySupported($classMetadata->reflClass, true)) {
-            if ($classMetadata->hasAssociation('createdBy') && !$entity->getCreatedBy()) {
-                $user = $this->getUser();
-                if ($this->isValidUser($user)) {
-                    $entity->setCreatedBy($user);
 
-                    $uow->propertyChanged($entity, 'createdBy', null, $user);
-                    $uow->scheduleExtraUpdate($entity, [
-                        'createdBy' => [null,  $user],
-                    ]);
-                }
+            $user = $this->getUser();
+
+            // no valid user
+            if ( !$this->isValidUser($user) ) return;
+
+            // Add createdBy
+            if ($classMetadata->hasAssociation('createdBy') && !$entity->getCreatedBy() ) {
+
+                $entity->setCreatedBy($user);
+                $uow->propertyChanged($entity, 'createdBy', null, $user);
             }
-            if ($classMetadata->hasAssociation('updatedBy') && !$entity->getUpdatedBy() ) {
-                $user = $this->getUser();
-                if ($this->isValidUser($user)) {
-                    $entity->setUpdatedBy($user);
-                    $uow->propertyChanged($entity, 'updatedBy', null, $user);
 
-                    $uow->scheduleExtraUpdate($entity, [
-                        'updatedBy' => [null, $user],
-                    ]);
-                }
+            // Add updatedBy
+            if ($classMetadata->hasAssociation('updatedBy') && !$entity->getUpdatedBy() ) {
+
+                $entity->setUpdatedBy($user);
+                $uow->propertyChanged($entity, 'updatedBy', null, $user);
             }
         }
     }
 
     /**
+     * Stores the current user into updatedby property
      *
+     * @param LifecycleEventArgs $eventArgs
+     */
+    public function preUpdate(LifecycleEventArgs $eventArgs)
+    {
+        $em     = $eventArgs->getEntityManager();
+        $uow    = $em->getUnitOfWork();
+        $entity = $eventArgs->getEntity();
+
+        $classMetadata = $em->getClassMetadata(get_class($entity));
+
+        if ($this->isEntitySupported($classMetadata->reflClass, true)) {
+
+            $user = $this->getUser();
+
+            // no valid user
+            if ( !$this->isValidUser($user) ) return;
+
+            // Update updatedBy
+            if ($classMetadata->hasAssociation('updatedBy') ) {
+
+                $oldValue = $entity->getUpdatedBy();
+
+                $entity->setUpdatedBy($user);
+                $uow->propertyChanged($entity, 'updatedBy', $oldValue, $user);
+            }
+        }
+    }
+
+    /**
+     * Check if the user is valid
+     *
+     * @param   user     $user
+     * @return  boolean
      */
     private function isValidUser($user)
     {
@@ -198,39 +229,7 @@ class BlameableListener implements EventSubscriber
     }
 
     /**
-     * Stores the current user into updatedby property
-     *
-     * @param LifecycleEventArgs $eventArgs
-     */
-    public function preUpdate(LifecycleEventArgs $eventArgs)
-    {
-        $em =$eventArgs->getEntityManager();
-        $uow = $em->getUnitOfWork();
-        $entity = $eventArgs->getEntity();
-
-        $classMetadata = $em->getClassMetadata(get_class($entity));
-        if ($this->isEntitySupported($classMetadata->reflClass, true)) {
-            if (!$entity->isBlameable()) {
-                return;
-            }
-
-            if ( $classMetadata->hasAssociation('updatedBy') ) {
-                $user = $this->getUser();
-                if ($this->isValidUser($user)) {
-                    $oldValue = $entity->getUpdatedBy();
-                    $entity->setUpdatedBy($user);
-                    $uow->propertyChanged($entity, 'updatedBy', $oldValue, $user);
-
-                    $uow->scheduleExtraUpdate($entity, [
-                        'updatedBy' => [$oldValue, $user],
-                    ]);
-                }
-            }
-        }
-    }
-
-    /**
-     * set a custome representation of current user
+     * Set a custome representation of current user
      *
      * @param mixed $user
      */
@@ -240,7 +239,7 @@ class BlameableListener implements EventSubscriber
     }
 
     /**
-     * get current user, either if $this->user is present or from userCallable
+     * Get current user
      *
      * @return mixed The user reprensentation
      */
