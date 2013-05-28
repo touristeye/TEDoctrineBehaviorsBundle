@@ -27,12 +27,12 @@ class DeviceCallable
 
     public function __invoke()
     {
-        if (!$this->container->isScopeActive('session')) {
+        // if we don't have the session object, return 0
+        if ( !$this->container->get('session') ) {
             return 0;
         }
 
         $device = $this->container->get('session')->get('_api_client');
-
         return $device ?: 0;
     }
 }
